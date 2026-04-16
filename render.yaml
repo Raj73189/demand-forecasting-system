@@ -5,7 +5,7 @@ services:
     runtime: python
     plan: free
     buildCommand: sh -c "if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install -r demand-forecasting-system/requirements.txt; fi"
-    startCommand: sh -c "if [ -d app ]; then gunicorn 'app.main:app' --bind 0.0.0.0:${PORT:-8000}; else cd demand-forecasting-system && gunicorn 'app.main:app' --bind 0.0.0.0:${PORT:-8000}; fi"
+    startCommand: gunicorn 'app.main:app' --bind 0.0.0.0:${PORT:-8000}
     envVars:
       - key: SECRET_KEY
         generateValue: true
