@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="auth-card">
+    <div class="auth-card__header">
+        <span class="auth-card__badge">Join us</span>
+        <h1>Create Account</h1>
+        <p>Register to save product forecasts and view them later securely.</p>
+    </div>
+
+    {% if message %}
+    <div class="alert success">{{ message }}</div>
+    {% endif %}
+    {% if error %}
+    <div class="alert error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/register" class="form auth-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div class="form-row">
+            <label for="email">Email</label>
+            <input id="email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required autofocus />
+        </div>
+
+        <div class="form-row">
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" autocomplete="new-password" placeholder="Create a strong password" minlength="8" required />
+        </div>
+
+        <button type="submit" class="btn">Create Account</button>
+    </form>
+
+    <div class="auth-card__footer">
+        <p class="small-link">
+            Already have an account? <a href="/login">Login</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

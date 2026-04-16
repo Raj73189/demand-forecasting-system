@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="panel">
+    <h1>Admin Dashboard</h1>
+    <p class="muted">Manage users, roles, and monitor overall forecasting usage.</p>
+
+    {% if message %}
+    <div class="alert success">{{ message }}</div>
+    {% endif %}
+    {% if error %}
+    <div class="alert error">{{ error }}</div>
+    {% endif %}
+
+    <div class="cards admin-cards">
+        <article class="metric normal">
+            <h3>Total Users</h3>
+            <p class="big">{{ total_users }}</p>
+        </article>
+        <article class="metric normal">
+            <h3>Total Forecasts</h3>
+            <p class="big">{{ total_forecasts }}</p>
+        </article>
+        <article class="metric normal">
+            <h3>Admin Accounts</h3>
+            <p class="big">{{ total_admins }}</p>
+        </article>
+    </div>
+</section>
+
+<section class="panel admin-section">
+    <h2>Users and Roles</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Forecast Runs</th>
+                    <th>Joined</th>
+                    <th>Change Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in users %}
+                <tr>
+                    <td>{{ row.email }}</td>
+                    <td><span class="pill {{ 'pill-admin' if row.role == 'admin' else 'pill-user' }}">{{ row.role }}</span></td>
+                    <td>{{ row.forecast_count }}</td>
+                    <td>{{ row.created_at.strftime("%Y-%m-%d %H:%M") if row.created_at else "-" }}</td>
+                    <td>
+                        <form method="post" action="/admin/users/{{ row.id }}/role" class="role-form">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <select name="role">
+                                <option value="user" {% if row.role == "user" %}selected{% endif %}>user</option>
+                                <option value="admin" {% if row.role == "admin" %}selected{% endif %}>admin</option>
+                            </select>
+                            <button type="submit" class="btn secondary">Save</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="panel admin-section">
+    <h2>Recent Forecast Runs</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Created</th>
+                    <th>User</th>
+                    <th>Product</th>
+                    <th>Points</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in recent_runs %}
+                <tr>
+                    <td>{{ row.created_at.strftime("%Y-%m-%d %H:%M") if row.created_at else "-" }}</td>
+                    <td>{{ row.user_email }}</td>
+                    <td>{{ row.product_name }}</td>
+                    <td>{{ row.input_points }}</td>
+                    <td class="actions-cell">
+                        <a class="btn secondary btn-link" href="/export/forecast/{{ row.id }}.csv">CSV</a>
+                        <a class="btn secondary btn-link" href="/export/forecast/{{ row.id }}.pdf">PDF</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

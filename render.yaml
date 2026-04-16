@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: demand-forecasting-system
+
+    runtime: python
+    plan: free
+    buildCommand: sh -c "if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install -r demand-forecasting-system/requirements.txt; fi"
+    startCommand: sh -c "if [ -d app ]; then gunicorn 'app.main:app' --bind 0.0.0.0:${PORT:-8000}; else cd demand-forecasting-system && gunicorn 'app.main:app' --bind 0.0.0.0:${PORT:-8000}; fi"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: DATABASE_URL
+        value: postgresql+psycopg://postgres:YOUR_URL_ENCODED_PASSWORD@db.eakopdyqdubxnmcwlfot.supabase.co:5432/postgres?sslmode=require
+      - key: ADMIN_EMAIL
+        value: dusmantadhal10sc14@gmail.com

@@ -1,0 +1,79 @@
+# =============================================================================
+# REQUIREMENTS.TXT - Python Dependency Management for Demand Forecasting System
+# =============================================================================
+#
+# PURPOSE:
+# This file centralizes all Python package requirements for the demand forecasting
+# web application. It ensures consistent environments across development, testing,
+# and production deployments.
+#
+# USAGE LOCATIONS:
+# 1. Local Development:
+#    - setup-local.bat: Installs dependencies into virtual environment
+#    - README.md: Manual setup instructions for developers
+#    - Ensures all team members use identical package versions
+#
+# 2. Docker Container Build:
+#    - Dockerfile: Installs dependencies during container image creation
+#    - Uses --no-cache-dir for smaller container images
+#    - Supports both root-level and subdirectory deployment
+#
+# 3. Cloud Deployment (Render):
+#    - render.yaml: Automated build process installs dependencies
+#    - Ensures production environment matches development exactly
+#    - Enables one-click deployment to Render's cloud platform
+#
+# 4. CI/CD and Testing:
+#    - Automated pipelines install from this file
+#    - Guarantees consistent testing environments
+#    - Prevents "works on my machine" issues
+#
+# VERSION PINNING STRATEGY:
+# Uses exact versions (==) rather than ranges for:
+# - Predictability: Eliminates surprises from automatic updates
+# - Stability: Prevents breaking changes in production
+# - Debugging: Easier to reproduce issues with known versions
+# - Security: Deliberate updates rather than automatic patches
+#
+# DEPENDENCY CATEGORIES:
+# =============================================================================
+
+# WEB FRAMEWORK
+# Core web framework handling HTTP requests, routing, templates, and sessions
+flask==3.1.0
+
+# TEMPLATE ENGINE
+# Template engine used by Flask for rendering HTML pages
+jinja2==3.1.6
+
+# CONFIGURATION MANAGEMENT
+# Environment variable management for .env file support
+python-dotenv==1.0.1
+
+# DATABASE LAYER
+# Database ORM and SQL toolkit for user authentication and forecast storage
+sqlalchemy==2.0.40
+# PostgreSQL database driver with binary for easier installation
+psycopg[binary]==3.2.13
+
+# SECURITY & AUTHENTICATION
+# Password hashing library for secure user authentication
+passlib==1.7.4
+# Password hashing algorithm backend for passlib
+bcrypt==4.2.0
+
+# HTTP CLIENT
+# HTTP client library (currently unused but included for potential future API integrations)
+httpx==0.28.1
+
+# TESTING & DEVELOPMENT
+# Testing framework for unit and integration tests
+pytest==8.3.5
+
+# PRODUCTION DEPLOYMENT
+# WSGI server for production deployment (used by gunicorn in Dockerfile and render.yaml)
+gunicorn==22.0.0
+
+# EXPORT FUNCTIONALITY
+# PDF generation library for exporting forecast reports
+fpdf2==2.8.1

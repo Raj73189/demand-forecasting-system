@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demand Forecasting System</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <a href="/dashboard">Demand Forecasting System</a>
+        </div>
+        {% if user %}
+        <div class="user-menu">
+            {% if user.role == "admin" %}
+            <a href="/admin" class="top-link">Admin</a>
+            {% endif %}
+            <span>{{ user.email }}</span>
+            <form method="post" action="/logout">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <button type="submit" class="btn secondary">Logout</button>
+            </form>
+        </div>
+        {% endif %}
+    </header>
+
+    <main class="page">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

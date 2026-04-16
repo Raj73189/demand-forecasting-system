@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard-grid">
+    <aside class="panel">
+        <h2>Create Forecast</h2>
+        <p>Upload CSV with columns like <code>date</code> and <code>demand</code>.</p>
+
+        {% if message %}
+        <div class="alert success">{{ message }}</div>
+        {% endif %}
+        {% if error %}
+        <div class="alert error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="/forecast" enctype="multipart/form-data" class="form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <label>Product Name</label>
+            <input type="text" name="product_name" placeholder="Example: iPhone 16" required />
+
+            <label>Past Data (CSV)</label>
+            <input type="file" name="history_file" accept=".csv" required />
+
+            <button type="submit" class="btn">Generate Forecast</button>
+        </form>
+
+        <div class="helper">
+            <strong>Sample format:</strong>
+            <pre>date,demand
+2023-01-01,100
+2023-02-01,120</pre>
+        </div>
+    </aside>
+
+    <section class="panel">
+        <h2>Saved Forecasts</h2>
+        {% if runs %}
+        <div class="run-list">
+            {% for run in runs %}
+            <a class="run-item {% if active_run and run.id == active_run.id %}active{% endif %}" href="/dashboard?run_id={{ run.id }}">
+                <strong>{{ run.product_name }}</strong>
+                <span>{{ run.created_at.strftime("%Y-%m-%d %H:%M") if run.created_at else "" }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p>No forecasts yet. Upload data to create your first one.</p>
+        {% endif %}
+    </section>
+</section>
+
+{% if summary and active_run %}
+<section class="results panel">
+    <h2>Forecast Results: {{ active_run.product_name }}</h2>
+    <p class="muted">High demand threshold: <strong>{{ summary.high_demand_threshold }}</strong></p>
+    <div class="result-actions">
+        <a class="btn secondary btn-link" href="/export/forecast/{{ active_run.id }}.csv">Download CSV</a>
+        <a class="btn secondary btn-link" href="/export/forecast/{{ active_run.id }}.pdf">Download PDF</a>
+    </div>
+
+    <div class="cards">
+        <article class="metric {% if summary.next_month.is_high_demand %}high{% else %}normal{% endif %}">
+            <h3>Next Month</h3>
+            <p class="big">{{ summary.next_month.forecast }}</p>
+            <p>{{ "High demand likely" if summary.next_month.is_high_demand else "Normal demand expected" }}</p>
+        </article>
+
+        <article class="metric {% if summary.next_5_months.is_high_demand %}high{% else %}normal{% endif %}">
+            <h3>Next 5 Months</h3>
+            <p class="big">{{ summary.next_5_months.average_forecast }}</p>
+            <p>{{ summary.next_5_months.months_high_demand }} high-demand months predicted</p>
+        </article>
+
+        <article class="metric {% if summary.next_5_years.is_high_demand %}high{% else %}normal{% endif %}">
+            <h3>Next 5 Years</h3>
+            <p class="big">{{ summary.next_5_years.growth_percent }}%</p>
+            <p>Growth from Year 1 avg to Year 5 avg</p>
+        </article>
+    </div>
+
+    <div class="chart-wrap">
+        <canvas id="demandChart"></canvas>
+    </div>
+
+    <div class="table-grid">
+        <div>
+            <h3>Latest Historical Points</h3>
+            <table>
+                <thead>
+                    <tr><th>Date</th><th>Demand</th></tr>
+                </thead>
+                <tbody>
+                    {% for row in historical[-12:] %}
+                    <tr><td>{{ row.date }}</td><td>{{ row.demand }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <h3>Upcoming Forecast (12 Months)</h3>
+            <table>
+                <thead>
+                    <tr><th>Date</th><th>Demand</th></tr>
+                </thead>
+                <tbody>
+                    {% for row in forecast[:12] %}
+                    <tr><td>{{ row.date }}</td><td>{{ row.demand }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script id="chart-data" type="application/json">{{ chart_payload | safe }}</script>
+<script src="/static/dashboard.js"></script>
+{% endif %}
+{% endblock %}

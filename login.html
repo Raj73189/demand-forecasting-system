@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flip-container">
+    <div class="flip-card" id="flipCard">
+        <!-- Front: Choice Screen -->
+        <div class="flip-card__front">
+            <section class="auth-card choice-card">
+                <div class="auth-card__header">
+                    <span class="auth-card__badge">Welcome</span>
+                    <h1>Get Started</h1>
+                    <p>Choose how you'd like to proceed with your forecasting dashboard.</p>
+                </div>
+
+                <div class="choice-buttons">
+                    <button class="btn choice-btn" data-action="login">Login</button>
+                    <button class="btn choice-btn secondary" data-action="register">Sign Up</button>
+                </div>
+
+                <div class="auth-card__footer">
+                    <p class="small-link">
+                        Secure access to your forecast data
+                    </p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Back: Form Screen -->
+        <div class="flip-card__back">
+            <!-- Login Form -->
+            <section class="auth-card form-card" data-form="login">
+                <div class="auth-card__header">
+                    <span class="auth-card__badge">Welcome back</span>
+                    <h1>Login</h1>
+                    <p>Sign in to access your forecasting dashboard and manage your forecast history securely.</p>
+                </div>
+
+                {% if message %}
+                <div class="alert success">{{ message }}</div>
+                {% endif %}
+                {% if error %}
+                <div class="alert error">{{ error }}</div>
+                {% endif %}
+
+                <form method="post" action="/login" class="form auth-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="form-row">
+                        <label for="email">Email</label>
+                        <input id="email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required autofocus />
+                    </div>
+
+                    <div class="form-row">
+                        <label for="password">Password</label>
+                        <input id="password" type="password" name="password" autocomplete="current-password" placeholder="Enter your password" required />
+                    </div>
+
+                    <button type="submit" class="btn">Login</button>
+                </form>
+
+                <div class="auth-card__footer">
+                    <p class="small-link">
+                        <a href="#" class="back-link">← Back to choices</a>
+                    </p>
+                </div>
+            </section>
+
+            <!-- Register Form -->
+            <section class="auth-card form-card hidden" data-form="register">
+                <div class="auth-card__header">
+                    <span class="auth-card__badge">Join us</span>
+                    <h1>Create Account</h1>
+                    <p>Register to save product forecasts and view them later securely.</p>
+                </div>
+
+                {% if message %}
+                <div class="alert success">{{ message }}</div>
+                {% endif %}
+                {% if error %}
+                <div class="alert error">{{ error }}</div>
+                {% endif %}
+
+                <form method="post" action="/register" class="form auth-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+                    <div class="form-row">
+                        <label for="reg-email">Email</label>
+                        <input id="reg-email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required autofocus />
+                    </div>
+
+                    <div class="form-row">
+                        <label for="reg-password">Password</label>
+                        <input id="reg-password" type="password" name="password" autocomplete="new-password" placeholder="Create a strong password" minlength="8" required />
+                    </div>
+
+                    <button type="submit" class="btn">Create Account</button>
+                </form>
+
+                <div class="auth-card__footer">
+                    <p class="small-link">
+                        <a href="#" class="back-link">← Back to choices</a>
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const flipCard = document.getElementById('flipCard');
+    const choiceButtons = document.querySelectorAll('.choice-btn');
+    const backLinks = document.querySelectorAll('.back-link');
+    const formCards = document.querySelectorAll('.form-card');
+
+    choiceButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const action = this.getAttribute('data-action');
+            flipCard.classList.add('flipped');
+
+            // Show the appropriate form
+            formCards.forEach(card => {
+                if (card.getAttribute('data-form') === action) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    backLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            flipCard.classList.remove('flipped');
+        });
+    });
+});
+</script>
+{% endblock %}
